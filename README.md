@@ -48,3 +48,7 @@ python app.py --live
 ## Ліцензія
 
 MIT
+
+## Скрншот
+
+![Demo](https://github.com/PeacefulPieDev/NoviZnannyaJournalValidator/blob/master/Demo.png)
