@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Журнальний помічник</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Журнальний помічник</h1>
+        <p>Завантажте файл Excel (.xls) із темами для перевірки. Файл із прізвищами учнів та оцінками на разі не підтримується!</p>
+        
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area" id="dropZone">
+                <input type="file" name="file" id="file" accept=".xls" style="display: none;">
+                <div class="drop-zone-content">
+                    <span class="drop-zone__prompt">Перетягніть файл сюди або клацніть, щоб вибрати</span>
+                    <span class="drop-zone__info" id="file-info">Файл не вибрано</span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="uploadBtn" class="btn" disabled>Завантажити</button>
+            </div>
+        </form>
+        
+
+        
+        {% if excel_data %}
+        <div class="excel-table-container">
+            <h3>Файл: {{ filename }}</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for header in excel_data[0] %}
+                                <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row_index in range(1, excel_data|length) %}
+                            {% set row = excel_data[row_index] %}
+                            <tr>
+                                {% for cell_index in range(row|length) %}
+                                    {% set cell = row[cell_index] %}
+                                    {% set cell_key = (row_index, cell_index) %}
+                                    {% set is_invalid = cell_key in invalid_cells %}
+                                    <td class="{% if is_invalid %}invalid-cell{% endif %}">
+                                        {{ cell if cell is not none else '' }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+        {% if messages %}
+            <div id="messages-container">
+                {% for message in messages %}
+                    {% set message_class = 'warning' if 'warning' in message|lower else 'invalid' %}
+                    <div class="message {{ message_class }}">
+                        <span class="message-text">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
